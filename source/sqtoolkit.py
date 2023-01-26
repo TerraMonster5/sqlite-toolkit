@@ -25,7 +25,8 @@ class DataBase:
 
     def dbQuery(self, tableName, fields: str="*", condition: Union[str, None]=None) -> Iterable[tuple[str]]:
         query = f"SELECT {fields} FROM {tableName}"
-        if condition: query += f" WHERE {condition}"
+        if condition:
+            query += f" WHERE {condition}"
         self._cursor.execute(query)
         rows = self._cursor.fetchall()
         for row in rows:
