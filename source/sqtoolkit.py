@@ -1,4 +1,5 @@
 import sqlite3 as sql
+from typing import Iterable, Union
 
 class DataBase:
     def __init__(self, file: str) -> None:
@@ -8,17 +9,24 @@ class DataBase:
     def __del__(self) -> None:
         self._db.close()
 
-    def createTable(self, tableName: str, fields: tuple) -> None:
-        self._cursor.execute(f"")
+    def createTable(self, tableName: str, fields: tuple[str]) -> None:
+        fieldsStr = ",".join(fields)
+        self._cursor.execute(f"CREATE TABLE {tableName}({fieldsStr})")
 
     def dropTable(self, tableName: str) -> None:
         self._cursor.execute(f"DROP TABLE {tableName}")
 
-    def insertRecord(self, tableName: str, fields: tuple, values: tuple) -> None:
-        self._cursor.execute(f"INSERT INTO {tableName}{fields} VALUES {values}")
+    def insertRecord(self, tableName: str, fields: tuple[str], values: tuple[str]) -> None:
+        fieldsStr, valuesStr = ",".join(fields), ",".join(values)
+        self._cursor.execute(f"INSERT INTO {tableName}({fieldsStr}) VALUES {valuesStr}")
 
-    def deleteRecord(self) -> None:
-        self._cursor.execute(f"")
+    def deleteRecord(self, tableName: str, condition: str) -> None:
+        self._cursor.execute(f"DELETE FROM {tableName} WHERE {condition}")
 
-    def dbQuery(self):
-        self._cursor.execute(f"")
+    def dbQuery(self, tableName, fields: str="*", condition: Union[str, None]=None) -> Iterable[tuple[str]]:
+        query = f"SELECT {fields} FROM {tableName}"
+        if condition: query += f" WHERE {condition}"
+        self._cursor.execute(query)
+        rows = self._cursor.fetchall()
+        for row in rows:
+            yield row
