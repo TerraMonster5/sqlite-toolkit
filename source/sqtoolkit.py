@@ -9,7 +9,7 @@ class DataBase:
         self._db.close()
 
     def createTable(self, tableName: str, fields: tuple) -> None:
-        pass
+        self._cursor.execute(f"")
 
     def dropTable(self, tableName: str) -> None:
         self._cursor.execute(f"DROP TABLE {tableName}")
@@ -18,7 +18,7 @@ class DataBase:
         self._cursor.execute(f"INSERT INTO {tableName}{fields} VALUES {values}")
 
     def deleteRecord(self) -> None:
-        pass
+        self._cursor.execute(f"")
 
     def dbQuery(self):
-        pass
+        self._cursor.execute(f"")
