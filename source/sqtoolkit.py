@@ -23,7 +23,7 @@ class DataBase:
     def deleteRecord(self, tableName: str, condition: str) -> None:
         self._cursor.execute(f"DELETE FROM {tableName} WHERE {condition}")
 
-    def dbQuery(self, tableName, fields: str="*", condition: Union[str, None]=None) -> Iterable[tuple[str]]:
+    def dbQuery(self, tableName: str, fields: str="*", condition: Union[str, None]=None) -> Iterable[tuple[str]]:
         query = f"SELECT {fields} FROM {tableName}"
         if condition:
             query += f" WHERE {condition}"
