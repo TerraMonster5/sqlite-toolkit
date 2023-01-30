@@ -23,10 +23,12 @@ class DataBase:
     def deleteRecord(self, tableName: str, condition: str) -> None:
         self._cursor.execute(f"DELETE FROM {tableName} WHERE {condition}")
 
-    def dbQuery(self, tableName: str, fields: str="*", condition: Union[str, None]=None) -> Iterable[tuple[str]]:
+    def dbQuery(self, tableName: str, fields: str="*", condition: Union[str, None]=None, reverse: bool=False) -> Iterable[tuple[str]]:
         query = f"SELECT {fields} FROM {tableName}"
         if condition:
             query += f" WHERE {condition}"
+        if reverse:
+            query += f" ORDER BY DESC"
         self._cursor.execute(query)
         rows = self._cursor.fetchall()
         for row in rows:
