@@ -11,7 +11,7 @@ class DataBase:
 
     def createTable(self, tableName: str, fields: tuple) -> None:
         fieldsStr = ",".join(fields)
-        self._cursor.execute(f"CREATE TABLE {tableName}({fieldsStr})")
+        self._cursor.execute(f"CREATE TABLE IF NOT EXISTS {tableName}({fieldsStr})")
         self._db.commit()
 
     def dropTable(self, tableName: str) -> None:
