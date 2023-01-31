@@ -13,6 +13,11 @@ class DataBase:
         fieldsStr = ",".join(fields)
         self._cursor.execute(f"CREATE TABLE {tableName}({fieldsStr})")
         self._db.commit()
+    
+    def createTableNotExists(self, tableName: str, fields: tuple) -> None:
+        fieldsStr = ",".join(fields)
+        self._cursor.execute(f"CREATE TABLE IF NOT EXISTS {tableName}({fieldsStr})")
+        self._db.commit()
 
     def dropTable(self, tableName: str) -> None:
         self._cursor.execute(f"DROP TABLE {tableName}")
@@ -34,6 +39,5 @@ class DataBase:
         if reverse:
             query += f" ORDER BY DESC"
         self._cursor.execute(query)
-        rows = self._cursor.fetchall()
-        for row in rows:
+        for row in self._cursor.fetchall():
             yield row
