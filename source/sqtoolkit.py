@@ -1,43 +1,74 @@
 import sqlite3 as sql
-from typing import Iterable, Union
+from typing import Iterable
 
 class DataBase:
     def __init__(self, file: str) -> None:
-        self._db = sql.connect(file)
-        self._cursor = self._db.cursor()
-    
-    def __del__(self) -> None:
-        self._db.close()
+        self._file = file
 
     def createTable(self, tableName: str, fields: tuple) -> None:
+        db = sql.connect(self._file)
+        cursor = db.cursor()
+
         fieldsStr = ",".join(fields)
-        self._cursor.execute(f"CREATE TABLE {tableName}({fieldsStr})")
-        self._db.commit()
+        cursor.execute(f"CREATE TABLE {tableName}({fieldsStr})")
+
+        db.commit()
+        db.close()
     
     def createTableNotExists(self, tableName: str, fields: tuple) -> None:
+        db = sql.connect(self._file)
+        cursor = db.cursor()
+
         fieldsStr = ",".join(fields)
-        self._cursor.execute(f"CREATE TABLE IF NOT EXISTS {tableName}({fieldsStr})")
-        self._db.commit()
+        cursor.execute(f"CREATE TABLE IF NOT EXISTS {tableName}({fieldsStr})")
+        
+        db.commit()
+        db.close()
 
     def dropTable(self, tableName: str) -> None:
-        self._cursor.execute(f"DROP TABLE {tableName}")
-        self._db.commit()
+        db = sql.connect(self._file)
+        cursor = db.cursor()
+
+        cursor.execute(f"DROP TABLE {tableName}")
+        
+        db.commit()
+        db.close()
 
     def insertRecord(self, tableName: str, fields: tuple, values: tuple) -> None:
+        db = sql.connect(self._file)
+        cursor = db.cursor()
+
         fieldsStr, valuesStr = ",".join(fields), ','.join(f"'{x}'" for x in values)
-        self._cursor.execute(f"INSERT INTO {tableName}({fieldsStr}) VALUES ({valuesStr})")
-        self._db.commit()
+        cursor.execute(f"INSERT INTO {tableName}({fieldsStr}) VALUES ({valuesStr})")
+        
+        db.commit()
+        db.close()
 
     def deleteRecord(self, tableName: str, condition: str) -> None:
-        self._cursor.execute(f"DELETE FROM {tableName} WHERE {condition}")
-        self._db.commit()
+        db = sql.connect(self._file)
+        cursor = db.cursor()
 
-    def dbQuery(self, tableName: str, fields: str="*", condition: Union[str, None]=None, reverse: bool=False) -> Iterable[tuple]:
+        cursor.execute(f"DELETE FROM {tableName} WHERE {condition}")
+        
+        db.commit()
+        db.close()
+
+    def query(self, tableName: str, fields: str="*", condition: str | None=None, reverse: bool=False) -> Iterable[tuple | str]:
+        db = sql.connect(self._file)
+        cursor = db.cursor()
+
         query = f"SELECT {fields} FROM {tableName}"
         if condition:
             query += f" WHERE {condition}"
         if reverse:
             query += f" ORDER BY DESC"
-        self._cursor.execute(query)
-        for row in self._cursor.fetchall():
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        if len(results[0]) == 1:
+            results = [x[0] for x in results]
+
+        db.close()
+
+        for row in results:
             yield row
